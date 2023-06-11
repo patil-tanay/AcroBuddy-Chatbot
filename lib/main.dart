@@ -1,29 +1,84 @@
-import 'package:acrobuddy/message.dart';
-import 'package:acrobuddy/ui.dart';
 import 'package:dialog_flowtter/dialog_flowtter.dart';
 import 'package:flutter/material.dart';
 
+
 void main() => runApp(const MyApp());
 
-
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}): super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Acro Buddy',
       theme: ThemeData(
-        primaryColor: Colors.deepPurple,
+        primaryColor: Colors.deepPurple, // Set primary color
         brightness: Brightness.dark,
         appBarTheme: const AppBarTheme(
-          elevation: 0,
-        )
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        // useMaterial3: true,
+          elevation: 0, // Remove app bar shadow
+        ),
       ),
-      home: const SpalshScreen(),
+      home: const SplashScreen(),
+      routes: {
+        '/home': (context) => const Home(),
+      },
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Welcome to Acro Chat',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.deepPurple, // Set the button background color
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12), // Set the button padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Set the button border radius
+                  ),
+                  elevation: 2, // Add a slight elevation to the button
+                ),
+                child: const Text(
+                  'Start Chat',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -35,41 +90,62 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home>{
+class _HomeState extends State<Home> {
   late DialogFlowtter dialogFlowtter;
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
-   List<Map<String, dynamic>> messages = [];
+  List<Map<String, dynamic>> messages = [];
 
   @override
-  void initState(){
-    DialogFlowtter.fromFile().then((instance)=> dialogFlowtter = instance);
+  void initState() {
+    DialogFlowtter.fromFile().then((instance) => dialogFlowtter = instance);
     super.initState();
+
+    // Add welcome message to the beginning of the messages list
+    messages.add({
+      'message': Message(
+          text: DialogText(text: ['Welcome to the Acropolis chatbot! How can I help you?'])),
+      'isUserMessage': false,
+    });
+
+
   }
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("AcroBuddy"),
+        title: const Text('Acro Buddy'),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              begin: Alignment.bottomCenter,
               colors: [
                 Color.fromARGB(120, 146, 187, 227),
-                Color.fromARGB(225, 28, 115, 142),
+                Color.fromARGB(255, 28, 115, 142),
               ],
             ),
           ),
         ),
       ),
       body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/chat_bg.jpg'),
+            fit: BoxFit.cover,
+            opacity: 0.8,
+
+          ),
+        ),
         child: Column(
           children: [
-            Expanded(child: MessagesScreen(messages: messages)),
+            Expanded(
+              child: MessagesScreen(messages: messages, scrollController: _scrollController),
+            ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
@@ -85,23 +161,24 @@ class _HomeState extends State<Home>{
               child: Row(
                 children: [
                   Expanded(
-                      child: TextField(
-                    controller: _controller,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Type a message...',
-                          hintStyle: TextStyle(
-                            color: Colors.white54,
-                            fontFamily: 'Cera Pro',
-                          ),
+                    child: TextField(
+                      controller: _controller,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Type a message...',
+                        hintStyle: TextStyle(
+                          color: Colors.white54,
+                          fontFamily: 'Cera Pro',
                         ),
-                  )),
+                      ),
+                    ),
+                  ),
                   IconButton(
-                      onPressed: (){
-                        sendMessage(_controller.text);
-                        _controller.clear();
-                  },
+                    onPressed: () {
+                      sendMessage(_controller.text);
+                      _controller.clear();
+                    },
                     icon: const Icon(Icons.send_rounded),
                     color: Colors.white,
                   ),
@@ -114,100 +191,100 @@ class _HomeState extends State<Home>{
     );
   }
 
-  sendMessage(String text)async{
-    if(text.isEmpty){
-      print("Message is Empty");
-    }else{
+  sendMessage(String text) async {
+    if (text.isEmpty) {
+      // print('Message is empty');
+    } else {
       setState(() {
-        addmessage(Message(text: DialogText(text: [text])), true);
+        addMessage(Message(text: DialogText(text: [text])), true);
       });
-      DetectIntentResponse response= await dialogFlowtter.detectIntent(
-          queryInput: QueryInput(text: TextInput(text: text)),
+
+      DetectIntentResponse response = await dialogFlowtter.detectIntent(
+        queryInput: QueryInput(text: TextInput(text: text)),
       );
-      if(response.message==null)return;
+      if (response.message == null) return;
       setState(() {
-        addmessage(response.message!);
+        addMessage(response.message!);
+      });
+
+      // Delay the scroll to the latest message to allow the ListView to rebuild
+      Future.delayed(Duration(milliseconds: 300), () {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       });
     }
   }
-  addmessage(Message message, [bool isUserMessage= false]) {
+
+  addMessage(Message message, [bool isUserMessage = false]) {
     messages.add({'message': message, 'isUserMessage': isUserMessage});
   }
+}
+
+class MessagesScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> messages;
+  final ScrollController scrollController;
+
+  const MessagesScreen({Key? key, required this.messages, required this.scrollController})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      itemCount: messages.length,
+      itemBuilder: (context, index) {
+        final message = messages[index]['message'] as Message;
+        final isUserMessage = messages[index]['isUserMessage'] as bool;
+
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          child: Row(
+            mainAxisAlignment:
+            isUserMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!isUserMessage)
+                const CircleAvatar(
+                  radius: 20,
+                  // Replace with chatbot avatar image
+                  backgroundImage: AssetImage('assets/chatbot_avatar.png'),
+                )
+              else
+                const Spacer(), // Adds space on the left for user messages
+              const SizedBox(width: 10),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isUserMessage ? Colors.green[100] : Colors.blue[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    message.text!.text![0],
+                    style: TextStyle(
+                      color: isUserMessage ? Colors.green[900] : Colors.blue[900],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              if (isUserMessage)
+                const CircleAvatar(
+                  radius: 20,
+                  // Replace with user avatar image
+                  backgroundImage: AssetImage('assets/user_avatar.png'),
+                )
+              else
+                const Spacer(), // Adds space on the right for chatbot messages
+
+            ],
+          ),
+        );
+      },
+    );
   }
-
-
-//   final String title;
-//
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-//
-// class _MyHomePageState extends State<MyHomePage> {
-//   int _counter = 0;
-//
-//   void _incrementCounter() {
-//     setState(() {
-//       // This call to setState tells the Flutter framework that something has
-//       // changed in this State, which causes it to rerun the build method below
-//       // so that the display can reflect the updated values. If we changed
-//       // _counter without calling setState(), then the build method would not be
-//       // called again, and so nothing would appear to happen.
-//       _counter++;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     // This method is rerun every time setState is called, for instance as done
-//     // by the _incrementCounter method above.
-//     //
-//     // The Flutter framework has been optimized to make rerunning build methods
-//     // fast, so that you can just rebuild anything that needs updating rather
-//     // than having to individually change instances of widgets.
-//     return Scaffold(
-//       appBar: AppBar(
-//         // TRY THIS: Try changing the color here to a specific color (to
-//         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-//         // change color while the other colors stay the same.
-//         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-//         // Here we take the value from the MyHomePage object that was created by
-//         // the App.build method, and use it to set our appbar title.
-//         title: Text(widget.title),
-//       ),
-//       body: Center(
-//         // Center is a layout widget. It takes a single child and positions it
-//         // in the middle of the parent.
-//         child: Column(
-//           // Column is also a layout widget. It takes a list of children and
-//           // arranges them vertically. By default, it sizes itself to fit its
-//           // children horizontally, and tries to be as tall as its parent.
-//           //
-//           // Column has various properties to control how it sizes itself and
-//           // how it positions its children. Here we use mainAxisAlignment to
-//           // center the children vertically; the main axis here is the vertical
-//           // axis because Columns are vertical (the cross axis would be
-//           // horizontal).
-//           //
-//           // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-//           // action in the IDE, or press "p" in the console), to see the
-//           // wireframe for each widget.
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             const Text(
-//               'You have pushed the button this many times:',
-//             ),
-//             Text(
-//               '$_counter',
-//               style: Theme.of(context).textTheme.headlineMedium,
-//             ),
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _incrementCounter,
-//         tooltip: 'Increment',
-//         child: const Icon(Icons.add),
-//       ), // This trailing comma makes auto-formatting nicer for build methods.
-//     );
-//   }
-// }
+}

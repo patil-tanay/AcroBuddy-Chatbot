@@ -1,6 +1,6 @@
 {
-    "name": "acrobuddy",
-    "short_name": "acrobuddy",
+    "name": "mindmentor",
+    "short_name": "mindmentor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

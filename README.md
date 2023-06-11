@@ -1,16 +1,13 @@
-# acrobuddy
+# mindmentor
+ MindMentor -  A mental health chatbot in flutter and google dialogflow.
+ where user can simply interact with the chat bot with their query and get response back.
 
-A new Flutter project.
+<p align="center">
+  <img src="https://github.com/Shonu72/mindmentor/assets/67668844/d19f1463-19bc-4f0b-a099-60fbca8d63bd" width="200" height="400" />&nbsp;
+  <img src="https://github.com/Shonu72/mindmentor/assets/67668844/39277ea0-702d-47f6-a252-54a9f60b69ce" width="200" height="400" />&nbsp;
+  <img src="https://github.com/Shonu72/mindmentor/assets/67668844/925be08b-fea2-47f4-a565-5a4e76415fa2" width="200" height="400" />
+</p>
+<p align="center">
+  Splash Screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Main Screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Chat Screen
+</p>
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
